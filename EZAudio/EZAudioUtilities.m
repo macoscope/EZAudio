@@ -765,9 +765,11 @@ BOOL __shouldExitOnCheckResultFail = YES;
     UInt32 maximumBufferSize;
     UInt32 propSize = sizeof(maximumBufferSize);
     [EZAudioUtilities checkResult:AudioUnitGetProperty(audioUnit,
-                                                       kAudioUnitProperty_MaximumFramesPerSlice,                                                       kAudioUnitScope_Global,
+                                                       kAudioUnitProperty_MaximumFramesPerSlice,
+                                                       kAudioUnitScope_Global,
                                                        0,
-                                                       &maximumBufferSize,                                                       &propSize)
+                                                       &maximumBufferSize,
+                                                       &propSize)
                         operation:"Failed to get maximum number of frames per slice"];
     return maximumBufferSize;
 }
