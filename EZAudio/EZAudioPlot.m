@@ -119,6 +119,7 @@ UInt32 const EZAudioPlotDefaultHistoryBufferLength = EZAudioPlotDefaultMaxHistor
 
 - (void)initPlot
 {
+    self.historyInfo = NULL;
     self.shouldCenterYAxis = YES;
     self.shouldOptimizeForRealtimePlot = YES;
     self.gain = 1.0;
@@ -215,7 +216,7 @@ UInt32 const EZAudioPlotDefaultHistoryBufferLength = EZAudioPlotDefaultMaxHistor
         self.displayLink = [EZAudioDisplayLink displayLinkWithDelegate:self];
         [self.displayLink start];
     }
-    else
+    else if (!shouldOptimizeForRealtimePlot)
     {
         [self.displayLink stop];
         self.displayLink = nil;
@@ -278,7 +279,7 @@ UInt32 const EZAudioPlotDefaultHistoryBufferLength = EZAudioPlotDefaultMaxHistor
     if (pointCount > 0)
     {
         path = CGPathCreateMutable();
-        double xscale = (rect.size.width) / ((float)self.pointCount);
+        double xscale = (rect.size.width) / ((double)MAX(pointCount-1, 1));
         double halfHeight = floor(rect.size.height / 2.0);
         int deviceOriginFlipped = [self isDeviceOriginFlipped] ? -1 : 1;
         CGAffineTransform xf = CGAffineTransformIdentity;
@@ -302,11 +303,11 @@ UInt32 const EZAudioPlotDefaultHistoryBufferLength = EZAudioPlotDefaultMaxHistor
             yScaleFactor = 2.0 * halfHeight;
         }
         xf = CGAffineTransformScale(xf, xscale, deviceOriginFlipped * yScaleFactor);
-        CGPathAddLines(path, &xf, self.points, self.pointCount);
+        CGPathAddLines(path, &xf, points, pointCount);
         if (self.shouldMirror)
         {
             xf = CGAffineTransformScale(xf, 1.0f, -1.0f);
-            CGPathAddLines(path, &xf, self.points, self.pointCount);
+            CGPathAddLines(path, &xf, points, pointCount);
         }
         if (self.shouldFill)
         {
