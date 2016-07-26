@@ -85,9 +85,14 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
 #pragma mark - Class Methods
 //------------------------------------------------------------------------------
 
-+ (instancetype)converterWithInputFormat:(AudioStreamBasicDescription)inputFormat
++ (instancetype)converterWithInputFormat:(AudioStreamBasicDescription)inputFormat;
 {
-    return [[self alloc] initWithInputFormat:inputFormat];
+    return [self converterWithInputFormat:inputFormat maximumBufferSize:EZAudioFloatConverterDefaultOutputBufferSize];
+}
+
++ (instancetype)converterWithInputFormat:(AudioStreamBasicDescription)inputFormat maximumBufferSize:(size_t)maximumBufferSize
+{
+    return [[self alloc] initWithInputFormat:inputFormat maximumBufferSize:maximumBufferSize];
 }
 
 //------------------------------------------------------------------------------
@@ -106,7 +111,7 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
 #pragma mark - Initialization
 //------------------------------------------------------------------------------
 
-- (instancetype)initWithInputFormat:(AudioStreamBasicDescription)inputFormat
+- (instancetype)initWithInputFormat:(AudioStreamBasicDescription)inputFormat maximumBufferSize:(size_t)maximumBufferSize
 {
     self = [super init];
     if (self)
@@ -114,7 +119,7 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
         self.info = (EZAudioFloatConverterInfo *)malloc(sizeof(EZAudioFloatConverterInfo));
         memset(self.info, 0, sizeof(EZAudioFloatConverterInfo));
         self.info->inputFormat = inputFormat;
-        [self setup];
+        [self setupWithMaximumBufferSize:maximumBufferSize];
     }
     return self;
 }
@@ -123,7 +128,7 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
 #pragma mark - Setup
 //------------------------------------------------------------------------------
 
-- (void)setup
+- (void)setupWithMaximumBufferSize:(size_t)maximumBufferSize
 {
     // create output format
     self.info->outputFormat = [EZAudioUtilities floatFormatWithNumberOfChannels:self.info->inputFormat.mChannelsPerFrame
@@ -168,7 +173,7 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
     }
     else
     {
-        packetsPerBuffer = outputBufferSize / sizePerPacket;
+        packetsPerBuffer = (UInt32)maximumBufferSize;
     }
     self.info->packetsPerBuffer = packetsPerBuffer;
     

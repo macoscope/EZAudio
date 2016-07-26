@@ -490,7 +490,7 @@ OSStatus EZOutputGraphRenderCallback(void                       *inRefCon,
                                                        sizeof(self.info->clientFormat))
                         operation:"Failed to set output client format on mixer audio unit"];
     
-    self.floatConverter = [[EZAudioFloatConverter alloc] initWithInputFormat:clientFormat];
+    self.floatConverter = [[EZAudioFloatConverter alloc] initWithInputFormat:clientFormat maximumBufferSize:EZOutputMaximumFramesPerSlice];
     self.info->floatData = [EZAudioUtilities floatBuffersWithNumberOfFrames:EZOutputMaximumFramesPerSlice
                                                            numberOfChannels:clientFormat.mChannelsPerFrame];
 }

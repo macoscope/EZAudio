@@ -517,6 +517,13 @@ typedef NSRect EZRect;
       withBufferSize:(UInt32)bufferSize
        toHistoryInfo:(EZPlotHistoryInfo *)historyInfo;
 
+
+//------------------------------------------------------------------------------
+
++ (void)removeEndWithSize:(UInt32)bufferSizeToRemove
+          fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo;
+
+
 //------------------------------------------------------------------------------
 
 /**
@@ -543,6 +550,10 @@ typedef NSRect EZRect;
  */
 + (EZPlotHistoryInfo *)historyInfoWithDefaultLength:(int)defaultLength
                                       maximumLength:(int)maximumLength;
+
+//------------------------------------------------------------------------------
+
++ (UInt32)maximumBufferSizeForAudioUnit:(AudioUnit)audioUnit;
 
 //------------------------------------------------------------------------------
 

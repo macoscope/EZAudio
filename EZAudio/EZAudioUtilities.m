@@ -670,6 +670,27 @@ BOOL __shouldExitOnCheckResultFail = YES;
 
 //------------------------------------------------------------------------------
 
++ (void)removeEndWithSize:(UInt32)bufferSizeToRemove fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo
+{
+    int32_t bufferSizeToRemoveInBytes = bufferSizeToRemove * sizeof(float);
+
+    int32_t bytesAvailableForRead = 0;
+    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead);
+
+    int32_t targetBufferSizeInBytes = historyInfo->bufferSize * sizeof(float);
+
+    int32_t requestedTargetBufferSizeInBytes = MAX(bytesAvailableForRead - bufferSizeToRemoveInBytes, 0);
+    int32_t requestedTargetBufferSize =  requestedTargetBufferSizeInBytes/sizeof(float);
+
+    memmove(historyInfo->buffer, historyBuffer, requestedTargetBufferSizeInBytes);
+    memset(historyInfo->buffer + requestedTargetBufferSize, 0, MAX(targetBufferSizeInBytes - requestedTargetBufferSizeInBytes, 0));
+
+    TPCircularBufferClear(&historyInfo->circularBuffer);
+    TPCircularBufferProduceBytes(&historyInfo->circularBuffer, historyInfo->buffer, requestedTargetBufferSizeInBytes);
+}
+
+//------------------------------------------------------------------------------
+
 + (void)appendBuffer:(float *)buffer
       withBufferSize:(UInt32)bufferSize
        toHistoryInfo:(EZPlotHistoryInfo *)historyInfo
@@ -681,7 +702,7 @@ BOOL __shouldExitOnCheckResultFail = YES;
     {
         return;
     }
-    
+
     //
     // Update the scroll history datasource
     //
@@ -690,11 +711,9 @@ BOOL __shouldExitOnCheckResultFail = YES;
     int32_t availableBytes = 0;
     float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &availableBytes);
     int32_t bytes = MIN(targetBytes, availableBytes);
-    memmove(historyInfo->buffer, historyBuffer, bytes);
-    if (targetBytes <= availableBytes)
-    {
-        TPCircularBufferConsume(&historyInfo->circularBuffer, availableBytes - targetBytes);
-    }
+
+    int32_t offsetForMostRecentPointsThatFitIntoTargetBuffer = MAX(availableBytes/(int32_t)sizeof(float) - historyInfo->bufferSize, 0);
+    memmove(historyInfo->buffer, historyBuffer + offsetForMostRecentPointsThatFitIntoTargetBuffer, bytes);
 }
 
 //------------------------------------------------------------------------------
@@ -710,8 +729,8 @@ BOOL __shouldExitOnCheckResultFail = YES;
 + (void)freeHistoryInfo:(EZPlotHistoryInfo *)historyInfo
 {
     free(historyInfo->buffer);
-    free(historyInfo);
     TPCircularBufferCleanup(&historyInfo->circularBuffer);
+    free(historyInfo);
 }
 
 //------------------------------------------------------------------------------
@@ -740,5 +759,19 @@ BOOL __shouldExitOnCheckResultFail = YES;
 }
 
 //------------------------------------------------------------------------------
+
++ (UInt32)maximumBufferSizeForAudioUnit:(AudioUnit)audioUnit
+{
+    UInt32 maximumBufferSize;
+    UInt32 propSize = sizeof(maximumBufferSize);
+    [EZAudioUtilities checkResult:AudioUnitGetProperty(audioUnit,
+                                                       kAudioUnitProperty_MaximumFramesPerSlice,
+                                                       kAudioUnitScope_Global,
+                                                       0,
+                                                       &maximumBufferSize,
+                                                       &propSize)
+                        operation:"Failed to get maximum number of frames per slice"];
+    return maximumBufferSize;
+}
 
 @end
