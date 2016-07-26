@@ -711,7 +711,9 @@ BOOL __shouldExitOnCheckResultFail = YES;
     int32_t availableBytes = 0;
     float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &availableBytes);
     int32_t bytes = MIN(targetBytes, availableBytes);
-    memmove(historyInfo->buffer, historyBuffer + MAX(availableBytes/(int32_t)sizeof(float) - historyInfo->bufferSize, 0) , bytes);
+
+    int32_t offsetForMostRecentPointsThatFitIntoTargetBuffer = MAX(availableBytes/(int32_t)sizeof(float) - historyInfo->bufferSize, 0);
+    memmove(historyInfo->buffer, historyBuffer + offsetForMostRecentPointsThatFitIntoTargetBuffer, bytes);
 }
 
 //------------------------------------------------------------------------------
