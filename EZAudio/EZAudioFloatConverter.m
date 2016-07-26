@@ -85,6 +85,11 @@ OSStatus EZAudioFloatConverterCallback(AudioConverterRef             inAudioConv
 #pragma mark - Class Methods
 //------------------------------------------------------------------------------
 
++ (instancetype)converterWithInputFormat:(AudioStreamBasicDescription)inputFormat;
+{
+    return [self converterWithInputFormat:inputFormat maximumBufferSize:EZAudioFloatConverterDefaultOutputBufferSize];
+}
+
 + (instancetype)converterWithInputFormat:(AudioStreamBasicDescription)inputFormat maximumBufferSize:(size_t)maximumBufferSize
 {
     return [[self alloc] initWithInputFormat:inputFormat maximumBufferSize:maximumBufferSize];
