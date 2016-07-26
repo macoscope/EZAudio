@@ -675,7 +675,7 @@ BOOL __shouldExitOnCheckResultFail = YES;
     int32_t bufferSizeToRemoveInBytes = bufferSizeToRemove * sizeof(float);
 
     int32_t bytesAvailableForRead = 0;
-    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead); //pointer do czytania
+    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead);
 
     int32_t targetBufferSizeInBytes = historyInfo->bufferSize * sizeof(float);
 
