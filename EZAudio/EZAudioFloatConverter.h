@@ -55,7 +55,7 @@ FOUNDATION_EXPORT UInt32 const EZAudioFloatConverterDefaultPacketSize;
 #pragma mark - Instance Methods
 //------------------------------------------------------------------------------
 
-- (instancetype)initWithInputFormat:(AudioStreamBasicDescription)inputFormat;
+- (instancetype)initWithInputFormat:(AudioStreamBasicDescription)inputFormat maximumBufferSize:(size_t)maximumBufferSize;
 
 //------------------------------------------------------------------------------
 

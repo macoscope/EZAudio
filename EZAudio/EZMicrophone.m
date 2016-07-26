@@ -390,21 +390,6 @@ static OSStatus EZAudioMicrophoneCallback(void                       *inRefCon,
     return &self.info->audioUnit;
 }
 
-//------------------------------------------------------------------------------
-
-- (UInt32)maximumBufferSize
-{
-    UInt32 maximumBufferSize;
-    UInt32 propSize = sizeof(maximumBufferSize);
-    [EZAudioUtilities checkResult:AudioUnitGetProperty(self.info->audioUnit,
-                                                       kAudioUnitProperty_MaximumFramesPerSlice,
-                                                       kAudioUnitScope_Global,
-                                                       0,
-                                                       &maximumBufferSize,
-                                                       &propSize)
-                        operation:"Failed to get maximum number of frames per slice"];
-    return maximumBufferSize;
-}
 
 //------------------------------------------------------------------------------
 #pragma mark - Setters
@@ -455,10 +440,11 @@ static OSStatus EZAudioMicrophoneCallback(void                       *inRefCon,
     //
     // Allocate scratch buffers
     //
-    UInt32 maximumBufferSize = [self maximumBufferSize];
+    
+    UInt32 maximumBufferSize = [EZAudioUtilities maximumBufferSizeForAudioUnit:self.info->audioUnit];
     BOOL isInterleaved = [EZAudioUtilities isInterleaved:asbd];
     UInt32 channels = asbd.mChannelsPerFrame;
-    self.floatConverter = [[EZAudioFloatConverter alloc] initWithInputFormat:asbd];
+    self.floatConverter = [[EZAudioFloatConverter alloc] initWithInputFormat:asbd maximumBufferSize:maximumBufferSize];
     self.info->floatData = [EZAudioUtilities floatBuffersWithNumberOfFrames:maximumBufferSize
                                                       numberOfChannels:channels];
     self.info->audioBufferList = [EZAudioUtilities audioBufferListWithNumberOfFrames:maximumBufferSize

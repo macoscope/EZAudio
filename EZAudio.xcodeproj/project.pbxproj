@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0666D6AA1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0666D6A91D4788B70030E5F0 /* EZAudioiOSStaticLibrary.h */; };
-		0666D6AC1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0666D6AB1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.m */; };
 		0666D6B01D4788C90030E5F0 /* EZAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 469F4CFF1B749FEC00666A46 /* EZAudio.m */; };
 		0666D6B11D4788CD0030E5F0 /* EZAudioDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 469F4D011B749FEC00666A46 /* EZAudioDevice.m */; };
 		0666D6B21D4788CF0030E5F0 /* EZAudioDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 469F4D031B749FEC00666A46 /* EZAudioDisplayLink.m */; };
@@ -117,7 +115,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				0666D6AA1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,8 +122,6 @@
 
 /* Begin PBXFileReference section */
 		0666D6A71D4788B70030E5F0 /* libEZAudioiOSStaticLibrary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEZAudioiOSStaticLibrary.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0666D6A91D4788B70030E5F0 /* EZAudioiOSStaticLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EZAudioiOSStaticLibrary.h; path = /Users/rafalaugustyniak/Documents/Projects/EZAudio/EZAudioiOSStaticLibrary/EZAudioiOSStaticLibrary.h; sourceTree = "<absolute>"; };
-		0666D6AB1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EZAudioiOSStaticLibrary.m; path = /Users/rafalaugustyniak/Documents/Projects/EZAudio/EZAudioiOSStaticLibrary/EZAudioiOSStaticLibrary.m; sourceTree = "<absolute>"; };
 		469F4CF31B749F7800666A46 /* EZAudioiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EZAudioiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		469F4CF81B749F7800666A46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		469F4CFE1B749FEC00666A46 /* EZAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EZAudio.h; sourceTree = "<group>"; };
@@ -458,7 +453,6 @@
 				0666D6B21D4788CF0030E5F0 /* EZAudioDisplayLink.m in Sources */,
 				0666D6B11D4788CD0030E5F0 /* EZAudioDevice.m in Sources */,
 				0666D6B41D4788D50030E5F0 /* EZAudioFile.m in Sources */,
-				0666D6AC1D4788B70030E5F0 /* EZAudioiOSStaticLibrary.m in Sources */,
 				0666D6B71D4788DE0030E5F0 /* EZAudioPlayer.m in Sources */,
 				0666D6B01D4788C90030E5F0 /* EZAudio.m in Sources */,
 				0666D6B61D4788DB0030E5F0 /* EZAudioFloatData.m in Sources */,
