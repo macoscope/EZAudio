@@ -32,12 +32,12 @@
 UInt32 const kEZAudioPlotMaxHistoryBufferLength = 8192;
 UInt32 const kEZAudioPlotDefaultHistoryBufferLength = 512;
 
-UInt32 const kEZAudioNumberNumberOfSecondsInMinute = 60;
-UInt32 const kEZAudioNumberOfSecondsVisibleOnScreen = 10;
-UInt32 const kEZAverageNumberOfPointsOnScreen = 840;
-UInt32 const kEZMaximumNumberOfMinutesInBuffer = 10;
+int32_t const kEZAudioNumberNumberOfSecondsInMinute = 60;
+int32_t const kEZAudioNumberOfSecondsVisibleOnScreen = 10;
+int32_t const kEZAverageNumberOfPointsOnScreen = 840;
+int32_t const kEZMaximumNumberOfMinutesInBuffer = 10;
 
-UInt32 const EZAudioPlotDefaultMaxHistoryBufferLength = kEZMaximumNumberOfMinutesInBuffer * kEZAudioNumberNumberOfSecondsInMinute * kEZAverageNumberOfPointsOnScreen;
+UInt32 const EZAudioPlotDefaultMaxHistoryBufferLength = (kEZMaximumNumberOfMinutesInBuffer * kEZAudioNumberNumberOfSecondsInMinute)/kEZAudioNumberOfSecondsVisibleOnScreen * kEZAverageNumberOfPointsOnScreen;
 
 UInt32 const EZAudioPlotDefaultHistoryBufferLength = EZAudioPlotDefaultMaxHistoryBufferLength/2;
 
