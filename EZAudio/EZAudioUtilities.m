@@ -670,23 +670,38 @@ BOOL __shouldExitOnCheckResultFail = YES;
 
 //------------------------------------------------------------------------------
 
-+ (void)removeEndWithSize:(UInt32)bufferSizeToRemove fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo
++ (void)updateBufferSize:(UInt32)requestedBufferSize byRemovingBytes:(UInt32)bufferSizeToRemove fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo
 {
     int32_t bufferSizeToRemoveInBytes = bufferSizeToRemove * sizeof(float);
+    int32_t targetBufferSizeInBytes = historyInfo->bufferSize * sizeof(float);
+    int32_t requestedBufferSizeInBytes = requestedBufferSize * sizeof(float);
 
     int32_t bytesAvailableForRead = 0;
-    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead);
+    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead); //pointer do czytania
 
-    int32_t targetBufferSizeInBytes = historyInfo->bufferSize * sizeof(float);
+    //how many floats can be potentially copied from circular buffer
+    int32_t numberOfBytesThatCanBePotentiallyCopiedFromCircularBuffer = MAX(bytesAvailableForRead - bufferSizeToRemoveInBytes, 0);
 
-    int32_t requestedTargetBufferSizeInBytes = MAX(bytesAvailableForRead - bufferSizeToRemoveInBytes, 0);
-    int32_t requestedTargetBufferSize =  requestedTargetBufferSizeInBytes/sizeof(float);
+    int32_t numberOfBytesToCopyFromCircularBufferToTargetBuffer;
+    int32_t numberOfBytesThatMustBeStoredInCircularBuffer;
 
-    memmove(historyInfo->buffer, historyBuffer, requestedTargetBufferSizeInBytes);
-    memset(historyInfo->buffer + requestedTargetBufferSize, 0, MAX(targetBufferSizeInBytes - requestedTargetBufferSizeInBytes, 0));
+    BOOL movingToBeginningOfGraph = requestedBufferSize <= historyInfo->bufferSize;
+    if (movingToBeginningOfGraph) {
+        numberOfBytesToCopyFromCircularBufferToTargetBuffer = MIN(requestedBufferSizeInBytes, numberOfBytesThatCanBePotentiallyCopiedFromCircularBuffer);
+        numberOfBytesThatMustBeStoredInCircularBuffer = requestedBufferSizeInBytes % targetBufferSizeInBytes;
+    } else {
+        numberOfBytesToCopyFromCircularBufferToTargetBuffer = MIN(targetBufferSizeInBytes, numberOfBytesThatCanBePotentiallyCopiedFromCircularBuffer);
+        numberOfBytesThatMustBeStoredInCircularBuffer = targetBufferSizeInBytes;
+    }
+
+    const int32_t offsetInCircularBuffer = MAX((numberOfBytesThatCanBePotentiallyCopiedFromCircularBuffer - numberOfBytesToCopyFromCircularBufferToTargetBuffer)/(int32_t)sizeof(float), 0) % historyInfo->circularBuffer.length;
+    const int32_t offsetInTargetBuffer = (numberOfBytesThatMustBeStoredInCircularBuffer - numberOfBytesToCopyFromCircularBufferToTargetBuffer)/(int32_t)sizeof(float);
+
+    memset(historyInfo->buffer, 0, targetBufferSizeInBytes);
+    memmove(historyInfo->buffer + offsetInTargetBuffer, historyBuffer + offsetInCircularBuffer, numberOfBytesToCopyFromCircularBufferToTargetBuffer);
 
     TPCircularBufferClear(&historyInfo->circularBuffer);
-    TPCircularBufferProduceBytes(&historyInfo->circularBuffer, historyInfo->buffer, requestedTargetBufferSizeInBytes);
+    TPCircularBufferProduceBytes(&historyInfo->circularBuffer, historyInfo->buffer, numberOfBytesThatMustBeStoredInCircularBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -706,13 +721,15 @@ BOOL __shouldExitOnCheckResultFail = YES;
     //
     // Update the scroll history datasource
     //
-    TPCircularBufferProduceBytes(&historyInfo->circularBuffer, buffer, bufferSize * sizeof(float));
+    while (!TPCircularBufferProduceBytes(&historyInfo->circularBuffer, buffer, bufferSize * sizeof(float))) {
+        TPCircularBufferConsume(&historyInfo->circularBuffer, bufferSize * sizeof(float));
+    }
     int32_t targetBytes = historyInfo->bufferSize * sizeof(float);
     int32_t availableBytes = 0;
     float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &availableBytes);
     int32_t bytes = MIN(targetBytes, availableBytes);
 
-    int32_t offsetForMostRecentPointsThatFitIntoTargetBuffer = MAX(availableBytes/(int32_t)sizeof(float) - historyInfo->bufferSize, 0);
+    int32_t offsetForMostRecentPointsThatFitIntoTargetBuffer = MAX(availableBytes/(int32_t)sizeof(float) - historyInfo->bufferSize, 0) % historyInfo->circularBuffer.length;
     memmove(historyInfo->buffer, historyBuffer + offsetForMostRecentPointsThatFitIntoTargetBuffer, bytes);
 }
 
@@ -745,16 +762,7 @@ BOOL __shouldExitOnCheckResultFail = YES;
     historyInfo->bufferSize = defaultLength;
     historyInfo->buffer = calloc(maximumLength, sizeof(float));
     TPCircularBufferInit(&historyInfo->circularBuffer, maximumLength);
-    
-    //
-    // Zero out circular buffer
-    //
-    float emptyBuffer[maximumLength];
-    memset(emptyBuffer, 0, sizeof(emptyBuffer));
-    TPCircularBufferProduceBytes(&historyInfo->circularBuffer,
-                                 emptyBuffer,
-                                 (int32_t)sizeof(emptyBuffer));
-    
+
     return historyInfo;
 }
 
