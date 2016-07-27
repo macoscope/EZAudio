@@ -677,7 +677,7 @@ BOOL __shouldExitOnCheckResultFail = YES;
     int32_t requestedBufferSizeInBytes = requestedBufferSize * sizeof(float);
 
     int32_t bytesAvailableForRead = 0;
-    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead); //pointer do czytania
+    float *historyBuffer = TPCircularBufferTail(&historyInfo->circularBuffer, &bytesAvailableForRead);
 
     //how many floats can be potentially copied from circular buffer
     int32_t numberOfBytesThatCanBePotentiallyCopiedFromCircularBuffer = MAX(bytesAvailableForRead - bufferSizeToRemoveInBytes, 0);
