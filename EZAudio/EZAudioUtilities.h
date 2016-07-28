@@ -520,8 +520,9 @@ typedef NSRect EZRect;
 
 //------------------------------------------------------------------------------
 
-+ (void)removeEndWithSize:(UInt32)bufferSizeToRemove
-          fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo;
++ (void)updateBufferSize:(UInt32)requestedBufferSize
+         byRemovingBytes:(UInt32)bufferSizeToRemove
+         fromHistoryInfo:(EZPlotHistoryInfo *)historyInfo;
 
 
 //------------------------------------------------------------------------------
